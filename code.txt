@@ -1,0 +1,57 @@
+-- 1 Selecteer alle apollo missies (de naam)
+select m.name as Missie_Naam from astronaut_missions am
+join missions m on am.mission_id = m.id
+where m.name like '%Apollo%';
+
+-- 2 Selecteer de apollo missies vanaf 1970 (naam en launch date)
+select m.name as Missie_Naam, m.launch_date as LanceerDatum from astronaut_missions am
+join missions m on am.mission_id = m.id
+where year(m.launch_date) >= 1970 and m.name like '%Apollo%';
+
+-- 3 Selecteer de missies waarvan de ‘command module’ begint met een ‘f’ karakter. (naam, commandmodule name en launch date)
+select m.name as Missie_Naam, m.command_module, m.launch_date as LanceerDatum from missions m
+where m.command_module like 'f%';
+
+-- 4 Selecteer de eerste missie die over een ‘lunar module’ beschikte. (naam, lunar module name en launch date)
+select m.name as Missie_Naam, m.lunar_module, m.launch_date as LanceerDatum from missions m 
+where m.lunar_module is not null
+order by m.launch_date asc
+limit 1;
+
+-- 5 Selecteer de eerste missie van de ‘H’ class, die over een ‘lunar module’ beschikte. (naam, naam lunar module en launch date)
+select m.name as Missie_Naam, m.lunar_module, m.launch_date as LanceerDatum from missions m 
+where m.class like '%H%' and m.lunar_module is not null
+order by m.launch_date asc
+limit 1;
+
+-- 6 Selecteer alle commanders van de apollo missies (naam, rolenaam, missienaam, launch date)
+select m.name as Missie_Naam, a.first_name as Voornaam, a.surname as Achternaam, m.launch_date as LanceerDatum, r.name as role from astronaut_missions am
+join missions m on am.mission_id = m.id 
+join astronauts a on am.astronaut_id = a.id
+join roles r on am.role_id = r.id
+where m.name like '%Apollo%' and r.name like '%Commander%';
+
+-- 7 Selecteer alle deelnemers van de apollo 13 missie (naam, voornaam, rolenaam, missienaam)
+select a.first_name as Voornaam, a.surname as Achternaam, r.name as Role, m.name as Missie_Naam from astronaut_missions am
+join missions m on am.mission_id = m.id
+join astronauts a on am.astronaut_id = a.id
+join roles r on am.role_id = r.id
+where m.name like '%Apollo 13%';
+
+-- 8 Hoeveel astronauten hebben in totaal deelgenomen aan de gemini missies?
+select count(a.id) as Aantal_Astronauten from astronaut_missions am
+join astronauts a on am.astronaut_id = a.id
+join missions m on am.mission_id = m.id 
+where m.name like '%Gemini%';
+
+-- 9 Aantal missies per programma
+select count(p.id) as "Aantal_Programma's", p.id as Program_Id, p.name as Programma_Naam from missions m
+join programs p on m.program_id = p.id
+group by p.id;
+
+
+-- 10 Aantal astronauten per rol (over alle missies)
+select count(a.id) as Aantal_Astronauten_Per_Role, r.name as Role from astronaut_missions am
+join astronauts a on am.astronaut_id
+join roles r on am.role_id = r.id
+group by r.id;
